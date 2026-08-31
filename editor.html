@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>織語</title>
+    <script>
+    (function(){
+      const filter = function(msg){
+        return typeof msg === 'string' && (
+          (msg.includes('WebSocket connection') && msg.includes('Page entered Back-Forward Cache')) ||
+          (msg.includes('Cannot read properties of undefined') && msg.includes('startTime'))
+        );
+      };
+      const origError = console.error;
+      console.error = function(...args){
+        if (filter(args[0])) return;
+        return origError.apply(this, args);
+      };
+      const origWarn = console.warn;
+      console.warn = function(...args){
+        if (filter(args[0])) return;
+        return origWarn.apply(this, args);
+      };
+      // Capture early error events
+      window.onerror = function(){return true;};
+    window.addEventListener('error', function(e){
+        const msg = e.message || '';
+        if (msg.includes('Back-Forward Cache') || (msg.includes('Cannot read properties of undefined') && msg.includes('startTime'))){
+          e.stopPropagation();
+          e.preventDefault();
+          console.debug('Ignored error via early handler');
+        }
+      }, true);
+    })();
+    </script>
+    <script>
+    (function(){
+      const socketSet = new Set();
+      const OriginalWebSocket = window.WebSocket;
+      function TrackingWebSocket(...args){
+        const ws = new OriginalWebSocket(...args);
+        socketSet.add(ws);
+        ws.addEventListener('close', () => socketSet.delete(ws));
+        return ws;
+      }
+      TrackingWebSocket.prototype = OriginalWebSocket.prototype;
+      window.WebSocket = TrackingWebSocket;
+      window.addEventListener('pagehide', () => {
+        socketSet.forEach(ws => { try{ ws.close(); }catch(e){} });
+        socketSet.clear();
+      });
+    })();
+    </script>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+Mono+TC&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" href="logo.png">
+    <script>
+    (function(){
+      // Extend error filtering to also handle Error objects and unhandled promise rejections.
+      function shouldIgnore(args) {
+        for (const a of args) {
+          if (typeof a === 'string') {
+            if (a.includes('WebSocket connection') && a.includes('Page entered Back-Forward Cache')) return true;
+            if (a.includes('Cannot read properties of undefined') && a.includes('startTime')) return true;
+          }
+          if (a && typeof a.message === 'string') {
+            if (a.message.includes('WebSocket connection') && a.message.includes('Page entered Back-Forward Cache')) return true;
+            if (a.message.includes('Cannot read properties of undefined') && a.message.includes('startTime')) return true;
+          }
+        }
+        return false;
+      }
+
+      const origError = console.error;
+      console.error = function(...args){
+        if (shouldIgnore(args)) return;
+        return origError.apply(this, args);
+      };
+      const origWarn = console.warn;
+      console.warn = function(...args){
+        if (shouldIgnore(args)) return;
+        return origWarn.apply(this, args);
+      };
+
+      window.addEventListener('unhandledrejection', function(e){
+        if (shouldIgnore([e.reason])) {
+          e.preventDefault();
+          console.debug('Ignored unhandled promise rejection');
+        }
+      });
+    })();
+    </script>
+        <script src="et-wrapper.js"></script>
+</head>
+<body class="flex h-screen overflow-hidden antialiased selection:bg-gray-200 selection:text-gray-900 bg-[#fbfbfa]">
+        <!-- Mobile Header -->
+        <div class="md:hidden flex items-center justify-between p-3 border-b border-gray-200 bg-white/80 backdrop-blur-md absolute top-0 w-full z-30 shadow-sm">
+            <div class="font-bold text-gray-800 flex items-center gap-2 tracking-wide">
+                <img src="logo.png" alt="Logo" class="w-7 h-7 rounded-lg object-contain">
+                <span>織語 <span class="text-xs text-gray-400 font-normal ml-1">Manager</span></span>
+            </div>
+            <button onclick="toggleMobileMenu()" class="p-2 -mr-1 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors">
+                <svg width="22" height="22" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M2 4h12v1H2V4zm0 3h12v1H2V7zm0 3h12v1H2v-1z"/></svg>
+            </button>
+        </div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-40 bg-[#f7f7f5] w-fit border-r border-gray-200 flex flex-col overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-out h-full md:h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] md:shadow-none">
+            <div class="p-4 border-b border-gray-200 hidden md:flex items-center justify-between sticky top-0 bg-[#f7f7f5]/90 backdrop-blur z-10">
+                <div class="font-semibold text-gray-800 flex items-center gap-2.5">
+                    <div class="w-6 h-6 bg-gray-200 rounded-md text-gray-800 flex items-center justify-center text-xs shadow-sm font-serif leading-none pt-[1px]">織</div>
+                    <span class="tracking-wide">我的創作空間</span>
+                </div>
+            </div>
+
+            <div class="p-4 pt-16 md:pt-4 shrink-0 space-y-5">
+                <!-- Authentication UI -->
+                <div id="auth-container" class="pb-1 -mx-1">
+                    <!-- Content injected by auth.js -->
+                </div>
+
+                <!-- BGM Section -->
+                <div class="flex space-x-2 mb-2">
+                    <button id="undo-btn" class="px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed" title="撤銷 (最多 5 步)" disabled>↩</button>
+                    <button id="redo-btn" class="px-2 py-1 text-xs bg-gray-200 text-gray-800 rounded hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed" title="重做 (最多 5 步)" disabled>↪</button>
+                </div>
+                <div class="dropdown">
+                    <div class="flex items-center justify-between cursor-pointer py-1.5 px-2 transition-colors select-none">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">背景音樂 (BGM)</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="space-y-2 hidden">
+                        <div id="bgm-container" class="hidden relative group rounded-p 1 p-1.5 shadow-sm border border-gray-100 bg-white">
+                            <audio id="bgm-audio" controls loop class="w-full h-8 opacity-80 hover:opacity-100 transition-opacity [&::-webkit-media-controls-panel]:bg-white"></audio>
+                            <button id="clear-audio-btn" class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-5 h-5 flex items-center justify-center text-xs text-red-500 shadow-sm hover:bg-red-50 hover:border-red-200 transition-all" onclick="clearAudio()" title="移除音樂">×</button>
+                        </div>
+                        <div id="bgm-youtube-container" class="hidden relative mt-2 group rounded-lg overflow-hidden shadow-sm border border-gray-100">
+                            <div id="bgm-youtube-iframe" class="w-full aspect-video bg-gray-100"></div>
+                            <button id="clear-yt-btn" class="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full w-5 h-5 flex items-center justify-center text-xs text-red-500 hidden group-hover:flex shadow-sm hover:bg-red-50 hover:border-red-200 transition-all z-10" onclick="clearYT()" title="移除影片">×</button>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <div class="relative flex-1">
+                                <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" width="16" height="12" viewBox="0 0 16 16"><path fill="currentColor" d="M15.8 4.8c-.2-.7-.7-1.2-1.4-1.4C13.2 3 8 3 8 3s-5.2 0-6.4.3c-.7.2-1.2.7-1.4 1.4C0 6 0 8 0 8s0 2 .3 3.2c.2.7.7 1.2 1.4 1.4C2.8 13 8 13 8 13s5.2 0 6.4-.3c.7-.2 1.2-.7 1.4-1.4.3-1.2.3-3.2.3-3.2s0-2-.3-3.2zM6.4 10.1V5.9l4.3 2.1-4.3 2.1z"/></svg>
+                                <input type="text" id="bgm-youtube-input" placeholder="YouTube 連結" class="w-full text-xs border border-gray-200 rounded bg-white py-1.5 pl-6 pr-2 outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-100 transition-all placeholder:text-gray-300" />
+                            </div>
+                            <button id="bgm-youtube-set" class="px-2.5 py-1.5 bg-gray-800 text-white text-xs rounded hover:bg-gray-700 transition-colors font-medium whitespace-nowrap">設定</button>
+                        </div>
+                        <div class="flex space-x-2">
+                            <label class="flex items-center gap-2 px-2.5 py-1.5 bg-gradient-to-r from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white rounded-lg shadow-sm hover:shadow transition-all cursor-pointer w-full justify-center">
+                                <span class="text-xs">上傳 BGM</span>
+                                <input type="file" id="bgm-upload" accept="audio/*" class="hidden">
+                            </label>
+                        </div>
+                        <div id="bgm-empty" class="text-xs text-gray-400 italic text-center py-2.5 bg-gray-50/50 rounded border border-dashed border-gray-200">
+                            尚未設定 BGM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Appearance Settings -->
+                <div class="dropdown">
+                    <div class="flex items-center justify-between cursor-pointer py-1.5 px-2 transition-colors select-none">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">頁面外觀</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="space-y-4 hidden">
+                        <!-- Background Image Upload -->
+                        <div class="group">
+                            <div class="flex justify-between items-center text-xs text-gray-600 mb-1.5">
+                                <span class="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M15.8 4.8c-.2-.7-.7-1.2-1.4-1.4C13.2 3 8 3 8 3s-5.2 0-6.4.3c-.7.2-1.2.7-1.4 1.4C0 6 0 8 0 8s0 2 .3 3.2c.2.7.7 1.2 1.4 1.4C2.8 13 8 13 8 13s5.2 0 6.4-.3c.7-.2 1.2-.7 1.4-1.4.3-1.2.3-3.2.3-3.2s0-2-.3-3.2zM6.4 10.1V5.9l4.3 2.1-4.3 2.1z"/></svg>背景圖</span>
+                                <div class="flex gap-1">
+                                    <button id="clear-bg-image" type="button" class="hidden px-1.5 py-0.5 text-[10px] text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors" onclick="clearBackgroundImage()">移除</button>
+                                    <label class="cursor-pointer hover:bg-gray-200 p-1 rounded transition-all text-gray-400 hover:text-gray-700">
+                                        <span id="bg-image-label">選擇</span>
+                                        <input type="file" id="bg-image-upload" accept="image/*" class="hidden">
+                                    </label>
+                                </div>
+                            </div>
+                            <label class="flex items-center text-[10px] text-gray-500 hidden bg-white p-1.5 rounded border border-gray-100 mt-1">
+                                <span class="mr-2">透明度</span>
+                                <input type="range" id="bg-opacity-slider" min="0" max="100" step="5" value="100" class="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-500">
+                                <span id="bg-opacity-value" class="ml-2 w-7 text-right font-mono">100%</span>
+                            </label>
+                        </div>
+
+                        <!-- Banner Image Upload -->
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span class="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 3h12v4H2V3zm0 5h12v5H2V8z"/></svg>橫幅圖片</span>
+                            <div class="flex gap-1">
+                                <button id="clear-banner" type="button" class="hidden px-1.5 py-0.5 text-[10px] text-red-600 bg-red-50 hover:bg-red-100 rounded transition-colors" onclick="clearBanner()">移除</button>
+                                <label class="cursor-pointer hover:bg-gray-200 p-1 rounded transition-all text-gray-400 hover:text-gray-700">
+                                    <span id="banner-image-label">選擇</span>
+                                    <input type="file" id="banner-upload" accept="image/*" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Avatar Upload -->
+                        <div class="flex justify-between items-center text-xs text-gray-600">
+                            <span class="flex items-center gap-1.5"><svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z"/></svg>頭貼</span>
+                            <label class="cursor-pointer hover:bg-gray-200 p-1 rounded transition-all text-gray-400 hover:text-gray-700">
+                                <span id="avatar-label">選擇</span>
+                                <input type="file" id="avatar-upload" accept="image/*" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Typography & Layout -->
+                <div class="dropdown">
+                    <div class="flex items-center justify-between cursor-pointer py-1.5 px-2 transition-colors select-none">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">排版設定</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="space-y-3 hidden">
+                        <!-- Font Selection -->
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-600">字體</span>
+                            <div class="flex items-center gap-1">
+                                <select id="font-select" class="text-xs border border-gray-200 rounded bg-white py-1 px-1.5 outline-none focus:border-gray-300 w-[110px]">
+                                    <option value="Inter">預設 (Inter)</option>
+                                    <option value="Roboto">Roboto</option>
+                                    <option value="LXGW WenKai Mono TC">文楷 (LXGW)</option>
+                                    <option value="custom">自訂...</option>
+                                </select>
+                                <label id="custom-font-label" class="cursor-pointer hidden p-1 hover:bg-gray-200 rounded text-gray-400 hover:text-gray-700" title="上傳字體檔案">
+                                    <svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M8 2a1 1 0 0 0-1 1v4H3a1 1 0 0 0 0 2h4v4a1 1 0 0 0 2 0V7h4a1 1 0 0 0 0-2H9V3a1 1 0 0 0-1-1z"/></svg>
+                                    <input type="file" id="custom-font-upload" accept=".ttf,.otf,.woff,.woff2" class="hidden">
+                                </label>
+                                <button id="clear-custom-font" class="hidden p-1 hover:bg-red-50 rounded text-red-400 hover:text-red-600 transition-colors" title="清除自訂字體">
+                                    <svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Block Insertion -->
+                <div class="dropdown">
+                    <div class="flex items-center justify-between cursor-pointer py-1.5 px-2 transition-colors select-none">
+                        <span class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">區塊插入</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06 0L10 10.92l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 010-1.06z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <div class="space-y-2 hidden">
+                        <div id="insert-container" class="relative group rounded-lg p-1.5 shadow-sm border border-gray-100">
+                            <div class="flex flex-col gap-1.5 px-1.5 pb-1 pt-1">
+                                <button id="menu-turn-divider-dash" class="px-2 py-1.5 hover:bg-gray-100 rounded-md text-[13px] text-gray-600 flex items-center justify-start gap-2 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 8h12v1H2z"/></svg> 虛線分隔線
+                                </button>
+                                <button id="menu-turn-divider-dot" class="px-2 py-1.5 hover:bg-gray-100 rounded-md text-[13px] text-gray-600 flex items-center justify-start gap-2 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 8h12v1H2z"/></svg> 點狀分隔線
+                                </button>
+                                <button id="menu-turn-divider-solid" class="px-2 py-1.5 hover:bg-gray-100 rounded-md text-[13px] text-gray-600 flex items-center justify-start gap-2 transition-colors bg-transparent">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 8h12v1H2z"/></svg> 實線分隔線
+                                </button>
+                                <button id="menu-turn-table" class="px-2 py-1.5 hover:bg-gray-100 rounded-md text-[13px] text-gray-600 flex items-center justify-start gap-2 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 2h12v12H2V2zm1 1v2h10V3H3zm0 3v2h10V6H3zm0 3v2h10V9H3z"/></svg> 表格
+                                </button>
+                                <button id="menu-turn-nav" class="px-2 py-1.5 hover:bg-gray-100 rounded-md text-[13px] text-gray-600 flex items-center justify-start gap-2 transition-colors">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 3h12v1H2V3zm0 3h12v1H2V6zm0 3h12v1H2V9z"/></svg> 導覽列
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="overflow-y-auto p-3 space-y-0.5 custom-scrollbar" id="sidebar-pages">
+                <!-- JavaScript will render pages and categories here -->
+            </div>
+
+            <!-- Bottom Actions -->
+            <div class="p-3 border-t border-gray-200 bg-[#f7f7f5]/90 backdrop-blur shrink-0 sticky bottom-0 z-10 space-y-1">
+                <button onclick="addCategory()" class="w-full text-left px-3 py-2 text-[13px] text-gray-600 hover:bg-gray-200/60 rounded flex items-center gap-2 transition-colors font-medium">
+                    <svg width="16" height="16" viewBox="0 0 16 16" class="text-gray-600"><path fill="currentColor" fill-rule="evenodd" d="M2 3h4l2 2h6a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/></svg> 新增分類
+                </button>
+                <button onclick="addPage()" class="w-full text-left cursor-pointer hover:bg-gray-200 p-1 rounded transition-all text-gray-400 hover:text-gray-700 flex items-center gap-2 transition-colors font-medium px-3 py-2 text-[13px]">
+                    <svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M14 3v10a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h7.5L14 4.5V3zM8 6v2H6v1h2v2h1V9h2V8h-2V6H8z"/></svg> 新增頁面
+                </button>
+            </div>
+        </aside>
+
+        <div id="bg-image-overlay" class="fixed inset-0 pointer-events-none z-0"></div>
+
+        <!-- Overlay for mobile sidebar -->
+        <div id="mobile-overlay" onclick="closeSidebars()" class="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-30 hidden md:hidden transition-opacity opacity-0"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 bg-transparent relative overflow-y-auto pt-0 md:pt-0 pl-6 pr-6 scroll-smooth custom-scrollbar" id="main-scroll">
+            <!-- Banner Container -->
+            <div id="banner-container" class="relative w-screen h-32 md:h-48 overflow-hidden hidden z-0 group md:-ml-24">
+                <img id="banner-image" class="w-full h-full object-cover" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wIAAgEB/4yE9dMAAAAASUVORK5CYII=" alt="Banner" />
+            </div>
+
+            <!-- Avatar Container -->
+            <div id="avatar-container" class="absolute flex items-end gap-3 hidden z-10 transition-all pointer-events-none px-6 md:px-16 w-full max-w-4xl mx-auto left-0 right-0">
+                <div class="relative group pointer-events-auto">
+                    <img id="avatar-preview" class="w-32 h-32 md:w-48 md:h-48 rounded-full object-cover hidden shadow-md border-4 bg-white" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wIAAgEB/4yE9dMAAAAASUVORK5CYII=" alt="Avatar"/>
+                    <button id="clear-avatar" class="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full text-red-500 shadow border border-gray-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50" title="移除頭貼">×</button>
+                </div>
+                <select id="avatar-align-select" class="pointer-events-auto mb-2 hidden text-[11px] border border-gray-200/80 text-gray-500 rounded-md bg-white/80 backdrop-blur shadow-sm py-1 px-1.5 outline-none hover:border-gray-300 focus:border-gray-300 transition-colors">
+                    <option value="left">靠左對齊</option>
+                    <option value="center">置中對齊</option>
+                    <option value="right">靠右對齊</option>
+                </select>
+            </div>
+
+            <div id="main-content" class="min-h-full pb-32 relative z-0">
+                <!-- JavaScript will render the active page here -->
+            </div>
+        </main>
+
+        <!-- Floating Block Context Menu -->
+        <div id="block-menu" class="fixed hidden bg-white shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100 rounded-xl p-1.5 z-50 flex flex-col gap-0.5 text-[13px] w-auto transition-opacity font-sans">
+            <div class="px-2.5 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">區塊設定</div>
+
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg group">
+                <span class="text-gray-600 font-medium">文字顏色</span>
+                <div class="flex items-center gap-1.5 bg-gray-100 group-hover:bg-white rounded-md p-1 border border-transparent group-hover:border-gray-200 transition-colors">
+                    <input type="color" id="menu-text-color-picker" class="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent rounded-sm">
+                    <input type="text" id="menu-text-color-hex" class="w-[48px] text-[10px] border-none bg-transparent outline-none font-mono text-gray-500 uppercase" placeholder="#000000" maxlength="7">
+                </div>
+            </div>
+
+            <div id="menu-button-bg-section" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg group">
+                <span class="text-gray-600 font-medium">按鈕顏色</span>
+                <div class="flex items-center gap-1.5 bg-gray-100 group-hover:bg-white rounded-md p-1 border border-transparent group-hover:border-gray-200 transition-colors">
+                    <input type="color" id="menu-button-bg-picker" class="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent rounded-sm">
+                    <input type="text" id="menu-button-bg-hex" class="w-[48px] text-[10px] border-none bg-transparent outline-none font-mono text-gray-500 uppercase" placeholder="#000000" maxlength="7">
+                </div>
+            </div>
+
+
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg">
+                <span class="text-gray-600 font-medium">對齊</span>
+                <div class="flex gap-0.5 bg-gray-100 p-0.5 rounded-md text-gray-800">
+                    <button id="menu-align-left" class="p-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="靠左"><svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M2 3h12v1.5H2V3zm0 4h8v1.5H2V7zm0 4h12v1.5H2v-1.5z"/></svg></button>
+                    <button id="menu-align-center" class="p-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="置中"><svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M2 3h12v1.5H2V3zm2 4h8v1.5H4V7zm-2 4h12v1.5H2V11z"/></svg></button>
+                    <button id="menu-align-right" class="p-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="靠右"><svg width="16" height="16" viewBox="0 0 16 16"><path fill="currentColor" d="M2 3h12v1.5H2V3zm4 4h8v1.5H6V7zm-4 4h12v1.5H2V11z"/></svg></button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg">
+                <span class="text-gray-600 font-medium">樣式</span>
+                <div class="flex gap-0.5 bg-gray-100 p-0.5 rounded-md text-gray-500 text-[10px] font-medium">
+                    <button id="menu-bold" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all font-bold font-serif" title="加粗">B</button>
+                    <button id="menu-italic" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all italic font-serif" title="斜體">I</button>
+                    <button id="menu-underline" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all underline font-serif" title="底線">U</button>
+                    <button id="menu-pageid" class="w-6 h-6 flex items-center justify-center rounded hover:bg-white hover:text-gray-700 hover:shadow-sm transition-all" title="外部連結">
+                        <svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" fill-rule="evenodd" d="M8 1a2 2 0 0 0-2 2v2H5V5l6 0v2h-1V5a2 2 0 0 0-2-2zM4 6a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H4zm4 5.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg" id="separator-scale-container">
+                <span class="text-gray-600 font-medium">分隔線比例</span>
+                <input type="range" id="menu-separator-scale" min="0.5" max="2" step="0.1" value="1" class="w-24">
+            </div>
+
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg">
+                <span class="text-gray-600 font-medium">版面</span>
+                <div class="flex gap-0.5 bg-gray-100 p-0.5 rounded-md text-gray-500 text-[10px] font-medium">
+                    <button id="menu-layout-single" class="px-1.5 py-1 rounded hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm transition-all" title="單欄佔滿">單欄</button>
+                    <button id="menu-layout-double" class="px-1.5 py-1 rounded hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm transition-all" title="雙欄並排">雙欄</button>
+                    <button id="menu-layout-card" class="px-1.5 py-1 rounded hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm transition-all" title="卡片樣式">卡片</button>
+                </div>
+            </div>
+            <div id="menu-nav-controls" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg">
+                <span class="text-gray-600 font-medium">導覽列按鈕</span>
+                <div class="flex gap-0.5 bg-gray-100 p-0.5 rounded-md text-gray-500 text-[10px] font-medium">
+                    <button id="menu-nav-add" class="px-1.5 py-1 rounded hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm transition-all">新增按鈕</button>
+                    <button id="menu-nav-remove" class="px-1.5 py-1 rounded hover:bg-gray-100 hover:text-gray-900 hover:shadow-sm transition-all">刪除按鈕</button>
+                </div>
+            </div>
+            <div id="menu-nav-bg-section" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg hidden">
+                <span class="text-gray-600 font-medium">導覽列顏色</span>
+                <div class="flex items-center gap-1.5 bg-gray-100 group-hover:bg-white rounded-md p-1 border border-transparent group-hover:border-gray-200 transition-colors">
+                    <input type="color" id="menu-nav-bg-picker" class="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent rounded-sm">
+                    <input type="text" id="menu-nav-bg-hex" class="w-[48px] text-[10px] border-none bg-transparent outline-none font-mono text-gray-500 uppercase" placeholder="#000000" maxlength="7">
+                </div>
+            </div>
+            <div id="menu-image-radius" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg hidden">
+                <span class="text-gray-600 font-medium">圖片圓角</span>
+                <div class="flex gap-1">
+                    <input type="range" id="menu-radius-slider" min="0" max="100" step="1" value="0" class="w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-500">
+                    <span id="menu-radius-value" class="text-xs text-gray-500">0%</span>
+                </div>
+            </div>
+            <div id="menu-image-size" class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg hidden">
+                <span class="text-gray-600 font-medium">圖片尺寸</span>
+                <div class="flex gap-1">
+                    <input type="range" id="menu-size-slider" min="10" max="100" step="1" value="100"
+                           class="w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-gray-500">
+                    <span id="menu-size-value" class="text-xs text-gray-500">100%</span>
+                </div>
+            </div>
+
+
+            <div class="flex items-center justify-between px-2.5 py-1.5 hover:bg-gray-50 rounded-lg">
+                <span class="text-gray-600 font-medium">轉換為</span>
+                <div class="flex gap-0.5 bg-gray-100 p-0.5 rounded-md text-gray-500 text-[10px] font-medium">
+                    <button id="menu-heading-h1" class="px-1.5 py-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="大標題">H1</button>
+                    <button id="menu-heading-h2" class="px-1.5 py-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="中標題">H2</button>
+                    <button id="menu-heading-h3" class="px-1.5 py-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="小標題">H3</button>
+                    <button id="menu-heading-p" class="px-1.5 py-1 rounded hover:bg-white hover:text-gray-900 hover:shadow-sm transition-all" title="內文">P</button>
+                </div>
+            </div>
+            <div class="flex flex-row gap-2 px-1.5 pb-1 items-center">
+                <button id="menu-turn-text" class="px-2 py-1.5 hover:bg-gray-50 rounded-md text-gray-600 flex items-center justify-center gap-1.5 transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" fill-rule="evenodd" d="M3 4h10v1.5H3V4zm3 4h4v1.5H6V8zm-3 4h7v1.5H3v-1.5z"/></svg> 文字
+                </button>
+                <button id="menu-turn-image" class="px-2 py-1.5 hover:bg-gray-50 rounded-md text-gray-600 flex items-center justify-center gap-1.5 transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" fill-rule="evenodd" d="M2 3h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm0 1v8h12V4H2zm3 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-3 5l4-4 2 2 3-3 3 3v1H2v-1z"/></svg> 圖片
+                </button>
+                <button id="menu-turn-button" class="px-2 py-1.5 hover:bg-gray-50 rounded-md text-gray-600 flex items-center justify-center gap-1.5 transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M2 5h12v2H2V5zm2 4h8v2H4V9z"/></svg> 按鈕
+                </button>
+                <button id="menu-turn-todo" class="px-2 py-1.5 hover:bg-gray-50 rounded-md text-gray-600 flex items-center justify-center gap-1.5 transition-colors">
+                    <svg width="12" height="12" viewBox="0 0 16 16" class="text-gray-400"><path fill="currentColor" d="M13 4l-6 6-2-2-1 1 3 3 7-7z"/></svg> 待辦清單
+                </button>
+            </div>
+
+
+            <button id="menu-set-id" class="text-left px-2.5 py-1.5 m-1 hover:bg-gray-200 text-gray-400 rounded-md flex items-center gap-2 transition-colors hidden">
+                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" d="M4 4h8v8H4z"/></svg> 設定 ID
+            </button>
+            <button id="menu-delete" class="text-left px-2.5 py-1.5 m-1 hover:bg-red-50 text-red-500 rounded-md flex items-center gap-2 transition-colors">
+                <svg width="12" height="12" viewBox="0 0 16 16"><path fill="currentColor" fill-rule="evenodd" d="M5.5 2h5v1h-5V2zm-3 2h11v1h-1v9a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1V5h-1V4zm2 1v9h7V5H4zm1 2h1v5H5V7zzm3 0h1v5H8V7z"/></svg> 刪除此區塊
+            </button>
+        </div>
+
+        <!-- Cell colour picker for table cells (initially hidden) -->
+        <div id="cell-color-picker" class="fixed hidden bg-white shadow-lg p-2 rounded-md" style="z-index: 1000;">
+            <div class="flex items-center gap-1">
+                <span class="text-gray-600 text-sm">文字顏色</span>
+                <input type="color" id="cell-text-color-picker" class="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent rounded-sm">
+                <input type="text" id="cell-text-color-hex" class="w-[48px] text-[10px] border-none bg-transparent outline-none font-mono text-gray-500 uppercase" placeholder="#000000" maxlength="7">
+            </div>
+            <div class="flex items-center gap-1 mt-1">
+                <span class="text-gray-600 text-sm">表格顏色</span>
+                <input type="color" id="cell-bg-color-picker" class="w-4 h-4 p-0 border-0 cursor-pointer bg-transparent rounded-sm">
+                <input type="text" id="cell-bg-color-hex" class="w-[48px] text-[10px] border-none bg-transparent outline-none font-mono text-gray-500 uppercase" placeholder="#ffffff" maxlength="7">
+            </div>
+        </div>
+
+        <!-- Firebase SDKs -->
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+        <script src="firebase-config.js"></script>
+        <script src="auth.js"></script>
+        <script src="template-storage.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.5.5/purify.min.js"></script>
+        <script src="script.js"></script>
+        <script src="share.js"></script>
+        <script src="preview-toggle.js"></script>
+    </body>
+</html>

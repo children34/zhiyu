@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>織語 - 模板庫</title>
+<script>
+(function(){
+  // Filter for noisy messages
+  const filter = function(msg){
+    return typeof msg === 'string' && (
+      (msg.includes('WebSocket connection') && msg.includes('Page entered Back-Forward Cache')) ||
+      (msg.includes('Cannot read properties of undefined') && msg.includes('startTime'))
+    );
+  };
+  // Override console.error and console.warn
+  const origError = console.error;
+  console.error = function(...args){
+    if (filter(args[0])) return;
+    return origError.apply(this, args);
+  };
+  const origWarn = console.warn;
+  console.warn = function(...args){
+    if (filter(args[0])) return;
+    return origWarn.apply(this, args);
+  };
+  // Capture early error events (capture phase)
+  window.onerror = function(){return true;};
+window.addEventListener('error', function(e){
+    const msg = e.message || (e.error && e.error.message) || '';
+    if (msg.includes('Back-Forward Cache') || (msg.includes('Cannot read properties of undefined') && msg.includes('startTime'))){
+      e.stopPropagation();
+      e.preventDefault();
+      console.debug('Ignored error via early handler');
+    }
+  }, true);
+  // Track WebSocket instances and close on pagehide to avoid BFCACHE errors
+  const socketSet = new Set();
+  const OriginalWebSocket = window.WebSocket;
+  function TrackingWebSocket(...args){
+    const ws = new OriginalWebSocket(...args);
+    socketSet.add(ws);
+    ws.addEventListener('close', () => socketSet.delete(ws));
+    return ws;
+  }
+  TrackingWebSocket.prototype = OriginalWebSocket.prototype;
+  window.WebSocket = TrackingWebSocket;
+  
+  window.addEventListener('pagehide', () => {
+    socketSet.forEach(ws => {
+      try{ ws.close(); }catch(e){}
+    });
+    socketSet.clear();
+  });
+
+  window.addEventListener('pageshow', function(e) {
+    if (e.persisted) {
+      window.location.reload();
+    }
+  });
+})();
+</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="style.css">
+<script>
+(function(){
+  function shouldIgnore(args) {
+    for (const a of args) {
+      if (typeof a === 'string') {
+        if (a.includes('WebSocket connection') && a.includes('Page entered Back-Forward Cache')) return true;
+        if (a.includes('Cannot read properties of undefined') && a.includes('startTime')) return true;
+      }
+      if (a && typeof a.message === 'string') {
+        if (a.message.includes('WebSocket connection') && a.message.includes('Page entered Back-Forward Cache')) return true;
+        if (a.message.includes('Cannot read properties of undefined') && a.message.includes('startTime')) return true;
+      }
+    }
+    return false;
+  }
+
+  const origError = console.error;
+  console.error = function(...args){
+    if (shouldIgnore(args)) return;
+    return origError.apply(this, args);
+  };
+  const origWarn = console.warn;
+  console.warn = function(...args){
+    if (shouldIgnore(args)) return;
+    return origWarn.apply(this, args);
+  };
+
+  window.addEventListener('unhandledrejection', function(e){
+    if (shouldIgnore([e.reason])) {
+      e.preventDefault();
+      console.debug('Ignored unhandled promise rejection');
+    }
+  });
+})();
+</script>
+  <script src="et-wrapper.js"></script>
+</head>
+<body class="flex items-center justify-center h-screen overflow-hidden antialiased selection:bg-gray-200 selection:text-gray-900 bg-[#fbfbfa]">
+
+
+    <div class="flex flex-col max-w-xl mx-auto space-y-4">
+      <img src="logo.png" alt="Logo" class="mx-auto mb-2 w-32 h-32">
+<h1 class="text-3xl font-bold text-center mb-4">模板庫</h1>
+
+      <button id="blank-template"
+              class="w-full py-2 text-sm bg-gray-200 text-gray-800 rounded hover:bg-gray-300 font-medium transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>新增空白模板
+      </button>
+
+
+      <div id="template-list" class="flex flex-col space-y-1 mt-3"></div>
+
+    </div>
+
+
+
+  <script src="template-storage.js"></script>
+  <script>
+  (function() {
+    if (typeof DOMPurify === 'undefined') {
+      window.DOMPurify = {
+        sanitize: function(dirty) {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(dirty, 'text/html');
+          doc.querySelectorAll('script,style').forEach(el => el.remove());
+          const all = doc.body.getElementsByTagName('*');
+          for (let i = 0; i < all.length; i++) {
+            const attrs = all[i].attributes;
+            for (let j = attrs.length - 1; j >= 0; j--) {
+              const name = attrs[j].name;
+              if (name.startsWith('on')) {
+                all[i].removeAttribute(name);
+              }
+            }
+          }
+          return doc.body.innerHTML;
+        }
+      };
+    }
+
+    const templateListEl = document.getElementById('template-list');
+    const blankBtn = document.getElementById('blank-template');
+
+    async function loadTemplates() {
+      const tpls = await readTemplateLibrary();
+      return JSON.parse(JSON.stringify(tpls));
+    }
+
+    async function saveTemplates(tpls) {
+      await writeTemplateLibrary(tpls);
+    }
+
+    function generateId() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return `tpl_${window.crypto.randomUUID()}`;
+      }
+      return `${Date.now().toString(36)}_${Math.random().toString(36).slice(2)}_${Math.random().toString(36).slice(2)}`;
+    }
+
+    async function renderList() {
+      const tpls = await loadTemplates();
+      templateListEl.innerHTML = '';
+      if (tpls.length === 0) {
+        templateListEl.innerHTML = '<div class="text-xs text-gray-400 text-center py-4 border border-dashed rounded">尚未建立任何自訂模板</div>';
+        return;
+      }
+      tpls.forEach((tpl) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'bg-gray-100 rounded shadow p-3 mb-2 relative flex items-center justify-between';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'flex-1 text-left py-1.5 px-3 bg-gray-100 text-gray-800 rounded hover:bg-gray-200 truncate text-sm font-medium transition-colors';
+        btn.textContent = tpl.name || `未命名模板`;
+        btn.title = tpl.name;
+        btn.dataset.id = tpl.id;
+        btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            localStorage.setItem('lastTemplateId', id);
+            // 只傳遞模板 ID；內容由 editor 依 ID 讀取，避免殘留的 selectedTemplate 造成資料串線。
+            localStorage.removeItem('selectedTemplate');
+            localStorage.setItem('selectedTemplateId', id);
+            window.location.href = 'editor.html';
+        });
+        const edit = document.createElement('button');
+        edit.type = 'button';
+        edit.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path fill="none" d="m15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 1 1 3.536 3.536L6.5 21.036H3v-3.572z"/></svg>';
+        edit.title = '重新命名';
+        edit.className = 'ml-1 p-1 hover:bg-gray-100 rounded text-sm';
+        edit.addEventListener('click', (e) => { e.stopPropagation(); editTemplate(tpl.id); });
+        const del = document.createElement('button');
+        del.type = 'button';
+        del.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+        del.title = '刪除模板';
+        del.className = 'ml-1 p-1 hover:bg-red-50 rounded text-sm text-red-500';
+        del.addEventListener('click', (e) => { e.stopPropagation(); deleteTemplate(tpl.id); });
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'text-xs text-gray-500';
+        timeDiv.textContent = tpl.lastEdited ? '最後編輯：' + new Date(tpl.lastEdited).toLocaleString() : '最後編輯：-';
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'flex items-center space-x-2';
+        actionsDiv.appendChild(edit);
+        actionsDiv.appendChild(del);
+        actionsDiv.appendChild(timeDiv);
+        wrapper.appendChild(btn);
+        // wrapper.appendChild(timeDiv); // moved inside actionsDiv
+        wrapper.appendChild(actionsDiv);
+        templateListEl.appendChild(wrapper);
+      });
+    }
+
+    async function editTemplate(id) {
+      const tpls = await loadTemplates();
+      const index = tpls.findIndex(t => t.id === id);
+      if (index === -1) { alert('未找到模板'); return; }
+      const tpl = tpls[index];
+      const newName = window.prompt('模板名稱', tpl.name);
+      if (newName === null || !newName.trim()) return;
+      tpls[index].name = newName.trim();
+      tpls[index].lastEdited = Date.now();
+      await saveTemplates(tpls);
+      await renderList();
+    }
+
+    async function deleteTemplate(id) {
+      console.log('[deleteTemplate] 呼叫，目標 ID：', id);
+      const confirmed = confirm('確定刪除這個模板嗎？記錄將會被移除。');
+      console.log('[deleteTemplate] 使用者確認結果：', confirmed);
+      if (!confirmed) return;
+      const tpls = await loadTemplates();
+      const index = tpls.findIndex(t => t.id === id);
+      console.log('[deleteTemplate] 目前模板筆數：', tpls.length);
+      if (index === -1) { alert('未找到模板'); return; }
+      tpls.splice(index, 1);
+      await saveTemplates(tpls);
+      // 清除可能殘留的 localStorage 鍵
+      if (localStorage.getItem('selectedTemplateId') === id) localStorage.removeItem('selectedTemplateId');
+      if (localStorage.getItem('lastTemplateId') === id) localStorage.removeItem('lastTemplateId');
+      if (localStorage.getItem('selectedTemplate') === id) localStorage.removeItem('selectedTemplate');
+      await renderList();
+    }
+
+    // 點擊新增空白模板時：不寫入 localStorage 紀錄，僅帶領進入 editor.html 展開全新空白頁面
+    blankBtn.addEventListener('click', () => {
+      localStorage.removeItem('selectedTemplate');
+      localStorage.removeItem('selectedTemplateId');
+      window.location.href = 'editor.html';
+    });
+
+
+
+    renderList();
+  })();
+  </script>
+</body>
+</html>
