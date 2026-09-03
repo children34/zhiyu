@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於我們 - 織語平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="logo.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex flex-col min-h-screen bg-gray-50">
+    <header class="bg-gray-100 py-4">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-3xl font-bold mb-2">關於我們</h1>
+            <p class="text-gray-600">本平台「織語」是一個輕量化的筆記/模板管理系統，讓使用者可以快速建立、編輯與分享自訂的內容模板。</p>
+        </div>
+    </header>
+    <main class="flex-grow flex items-center justify-center">
+        <section class="max-w-2xl mx-auto p-6 bg-white rounded shadow-md">
+            <h2 class="text-2xl font-semibold mb-4">平台宗旨</h2>
+            <p class="mb-4">
+                透過簡潔直觀的介面，提供使用者一個可自行組合文字、圖片、按鈕、待辦項目等區塊的編輯環境，並支援即時預覽、版本儲存與雲端備份（Firestore / IndexedDB）。
+            </p>
+            <h2 class="text-2xl font-semibold mb-4">主要功能與服務</h2>
+            <ul class="list-disc list-inside space-y-2">
+                <li>模板庫：瀏覽、建立與管理自訂模板。</li>
+                <li>即時編輯器：支援文字、圖片、按鈕、待辦等多種區塊類型。</li>
+                <li>預覽與分享模式：在只讀狀態下檢視並分享產出的頁面。</li>
+                <li>背景與音樂設定：可上傳背景圖、橫幅圖與背景音樂。</li>
+                <li>本機與雲端同步：使用 IndexedDB 作為離線儲存，必要時同步至 Firestore。</li>
+                <li>使用者驗證：支援 Google 登入以保護個人資料。</li>
+            </ul>
+            <div class="mt-6 text-center">
+                <a href="index.html" class="inline-block px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors">回到首頁</a>
+            </div>
+        </section>
+    </main>
+    <footer class="w-full py-4 bg-gray-100 text-center text-sm text-gray-600">
+        <a href="about.html" class="mx-2 hover:underline">關於我們</a>
+        <a href="#" class="mx-2 hover:underline">聯絡我們</a>
+        <a href="#" class="mx-2 hover:underline">隱私權政策</a>
+    </footer>
+</body>
+</html>

@@ -8,12 +8,13 @@
     <link rel="icon" href="logo.png">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="flex items-center justify-center h-screen bg-gray-50">
-    <div class="flex flex-col items-center space-y-4 transform scale-125 origin-center">
+<body class="flex flex-col min-h-screen bg-gray-50">
+    <main class="flex flex-col flex-grow items-center justify-center"><div class="flex flex-col items-center space-y-4 transform scale-125 origin-center">
         <img src="logo.png" alt="織語 Logo" class="w-32 h-32">
         <h1 class="text-2xl font-bold">織語</h1>
         <div id="auth-container"></div>
-    </div>
+        <div id="main-content"></div>
+    </div></main>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -21,5 +22,36 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="firebase-config.js"></script>
     <script src="auth.js"></script>
-    </body>
+<!-- script.js moved to end of body -->
+    <footer class="w-full py-4 bg-gray-100 text-center text-sm text-gray-600">
+      <a href="about.html" class="mx-2 hover:underline">關於我們</a>
+      <button id="contact-us-toggle" class="mx-2 hover:underline focus:outline-none">聯絡我們</button>
+      <a href="#" class="mx-2 hover:underline">隱私權政策</a>
+    </footer>
+
+<div id="contact-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <h2 class="text-xl font-bold mb-4 text-center">聯絡我們</h2>
+    <form id="contact-form" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">姓名</label>
+        <input type="text" name="name" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <input type="email" name="email" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">訊息</label>
+        <textarea name="message" rows="4" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" id="contact-close" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">取消</button>
+        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">送出</button>
+      </div>
+    </form>
+  </div>
+</div>
+<script src="contact.js"></script>
+</body>
 </html>
