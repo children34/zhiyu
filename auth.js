@@ -56,7 +56,7 @@ function renderUserUI(user) {
   document.getElementById('logout-btn').addEventListener('click', async () => {
     const { error } = await supabase.auth.signOut();
     if (error) handleAuthError(error);
-    else window.location.href = 'index.html';
+    else window.location.href = '/index.html';
   });
 }
 
@@ -143,7 +143,7 @@ window.addEventListener('DOMContentLoaded', () => {
         renderUserUI(user);
         showEditor();
         if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '') {
-          setTimeout(() => { window.location.href = 'template.html'; }, 600);
+          setTimeout(() => { window.location.href = '/template.html'; }, 600);
         }
       }
     } else {

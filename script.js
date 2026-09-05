@@ -377,7 +377,7 @@ async function saveCurrentPageToTemplate() {
         localStorage.setItem('lastTemplateId', templateId);
         localStorage.removeItem('selectedTemplateId');
 
-        window.location.replace('template.html');
+        window.location.replace('/template.html');
     } catch (e) {
         console.error('儲存至模板失敗', e);
         alert('儲存失敗，請稍後再試。');

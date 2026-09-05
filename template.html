@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/" />
   <title>織語 - 模板庫</title>
   <script>
   (function(){
@@ -160,7 +161,7 @@
           localStorage.setItem('lastTemplateId', id);
           localStorage.removeItem('selectedTemplate');
           localStorage.setItem('selectedTemplateId', id);
-          window.location.href = 'editor.html';
+          window.location.href = '/editor.html';
         });
 
         const edit = document.createElement('button');
@@ -222,7 +223,7 @@
     blankBtn.addEventListener('click', () => {
       localStorage.removeItem('selectedTemplate');
       localStorage.removeItem('selectedTemplateId');
-      window.location.href = 'editor.html';
+      window.location.href = '/editor.html';
     });
 
     renderList();
