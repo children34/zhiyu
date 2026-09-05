@@ -3,42 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>關於我們 - 織語平台</title>
+    <title>織語 - 關於我們</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="logo.png">
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="flex flex-col min-h-screen bg-gray-50">
-    <header class="bg-gray-100 py-4">
-        <div class="max-w-3xl mx-auto text-center">
-            <h1 class="text-3xl font-bold mb-2">關於我們</h1>
-            <p class="text-gray-600">本平台「織語」是一個輕量化的筆記/模板管理系統，讓使用者可以快速建立、編輯與分享自訂的內容模板。</p>
+<body class="flex flex-col min-h-screen bg-[#fbfbfa] text-gray-800 antialiased selection:bg-gray-200 selection:text-gray-900">
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="inline-flex items-center gap-2.5">
+                <img src="logo.png" alt="織語 Logo" class="w-8 h-8 rounded-lg object-contain">
+                <span class="text-xl font-bold text-gray-900 tracking-wide">織語</span>
+            </a>
+            <nav class="flex items-center gap-6 text-sm">
+                <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors">首頁</a>
+                <a href="about.html" class="font-semibold text-gray-900">關於我們</a>
+                <a href="privacy.html" class="text-gray-600 hover:text-gray-900 transition-colors">隱私權政策</a>
+            </nav>
         </div>
     </header>
-    <main class="flex-grow flex items-center justify-center">
-        <section class="max-w-2xl mx-auto p-6 bg-white rounded shadow-md">
-            <h2 class="text-2xl font-semibold mb-4">平台宗旨</h2>
-            <p class="mb-4">
-                透過簡潔直觀的介面，提供使用者一個可自行組合文字、圖片、按鈕、待辦項目等區塊的編輯環境，並支援即時預覽、版本儲存與雲端備份（Firestore / IndexedDB）。
+
+    <main class="flex-grow max-w-3xl mx-auto px-4 py-12 w-full">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">關於我們</h1>
+            <p class="text-base md:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                織語是為創作者設計的極簡編輯器。
             </p>
-            <h2 class="text-2xl font-semibold mb-4">主要功能與服務</h2>
-            <ul class="list-disc list-inside space-y-2">
-                <li>模板庫：瀏覽、建立與管理自訂模板。</li>
-                <li>即時編輯器：支援文字、圖片、按鈕、待辦等多種區塊類型。</li>
-                <li>預覽與分享模式：在只讀狀態下檢視並分享產出的頁面。</li>
-                <li>背景與音樂設定：可上傳背景圖、橫幅圖與背景音樂。</li>
-                <li>本機與雲端同步：使用 IndexedDB 作為離線儲存，必要時同步至 Firestore。</li>
-                <li>使用者驗證：支援 Google 登入以保護個人資料。</li>
-            </ul>
-            <div class="mt-6 text-center">
-                <a href="index.html" class="inline-block px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition-colors">回到首頁</a>
+        </div>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">設計理念</h2>
+            <div class="space-y-4 text-gray-700 leading-relaxed bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <p>
+                    <strong>「所見即所得，所想即所得」</strong>——這是織語的核心信念。我們移除了傳統編輯器複雜的工具列、選單巢狀結構與冗餘設定，只保留最本質的創作體驗：區塊式編輯、拖曳排序、即時預覽。
+                </p>
+                <p>
+                    每一個功能都經過深思熟慮：模板系統讓靈感可被複用、分享連結讓作品能被傳遞、背景音樂與視覺客製化讓創作空間有溫度。我們不堆砌功能，只打磨體驗。
+                </p>
             </div>
         </section>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">核心功能</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mb-4 text-gray-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">區塊式編輯器</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">文字、圖片、表格、待辦、分隔線、導覽列、按鈕——所有內容皆為可拖曳、可重複使用的區塊。</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mb-4 text-gray-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">模板系統與雲端同步</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">一鍵儲存當前頁面為模板，下次新建即刻復用。Supabase 驅動雲端同步，多裝置無縫切換，資料永不遺失。</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mb-4 text-gray-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">分享與協作</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">生成唯讀分享連結，任何人無需登入即可瀏覽。適合作品集展示、簡報分享、公開筆記發布。</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+                    <div class="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center mb-4 text-gray-800">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-2">視覺與氛圍客製化</h3>
+                    <p class="text-sm text-gray-600 leading-relaxed">背景圖、橫幅、頭貼、背景音樂（上傳/YouTube）、字體選擇——打造專屬你的創作氛圍。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">技術架構</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <ul class="space-y-3 text-sm text-gray-700">
+                    <li class="flex items-center gap-3"><span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-800 font-mono text-xs font-bold">1</span>前端：原生 JavaScript (ES6+) + Tailwind CSS，零框架負擔，載入極速</li>
+                    <li class="flex items-center gap-3"><span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-800 font-mono text-xs font-bold">2</span>後端：Supabase (PostgreSQL + Auth + Storage + Realtime)，開源、可自架、企業級可靠度</li>
+                    <li class="flex items-center gap-3"><span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-800 font-mono text-xs font-bold">3</span>認證：Google OAuth 2.0，支援匿名與正式帳號無縫切換</li>
+                    <li class="flex items-center gap-3"><span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-800 font-mono text-xs font-bold">4</span>本地優先：IndexedDB 離線儲存，上線自動同步，斷網也能寫</li>
+                    <li class="flex items-center gap-3"><span class="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-gray-800 font-mono text-xs font-bold">5</span>部署：靜態網站託管 (GitHub Pages / Netlify / Vercel)，全球 CDN 加速</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="mb-12">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">開發者</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <p class="text-sm text-gray-700 mb-2">
+                    織語由獨立開發者打造與維護，源於對「極簡創作工具」的執著。
+                </p>
+                <p class="text-sm text-gray-700 mb-4">
+                    我們不追求功能堆疊，只專注於打磨每一次點擊、每一次輸入、每一次分享的體驗。
+                </p>
+                <p class="text-sm text-gray-900 font-medium">
+                    回饋與建議：children520cats@gmail.com
+                </p>
+            </div>
+        </section>
+
+        <div class="text-center">
+            <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                回到首頁
+            </a>
+        </div>
     </main>
-    <footer class="w-full py-4 bg-gray-100 text-center text-sm text-gray-600">
-        <a href="about.html" class="mx-2 hover:underline">關於我們</a>
-        <a href="#" class="mx-2 hover:underline">聯絡我們</a>
-        <a href="#" class="mx-2 hover:underline">隱私權政策</a>
+
+    <footer class="w-full py-6 bg-white border-t border-gray-200 text-gray-500 text-xs">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p class="mb-2">© 2026 織語</p>
+            <div class="flex justify-center gap-6">
+                <a href="about.html" class="hover:text-gray-900 transition-colors">關於我們</a>
+                <button type="button" id="contact-us-toggle" class="hover:text-gray-900 transition-colors cursor-pointer">聯絡我們</button>
+                <a href="privacy.html" class="hover:text-gray-900 transition-colors">隱私權政策</a>
+            </div>
+        </div>
     </footer>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl border border-gray-100">
+            <h2 class="text-lg font-bold mb-3 text-center text-gray-900">聯絡我們</h2>
+            <div class="h-px bg-gray-200 my-3"></div>
+            <p class="text-center mb-6 text-sm text-gray-700">children520cats@gmail.com</p>
+            <div class="flex justify-end">
+                <button type="button" id="contact-close" class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="contact.js"></script>
 </body>
 </html>

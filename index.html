@@ -3,55 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>織語 - Google 登入</title>
+    <title>織語 - 登入</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" href="logo.png">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="flex flex-col min-h-screen bg-gray-50">
-    <main class="flex flex-col flex-grow items-center justify-center"><div class="flex flex-col items-center space-y-4 transform scale-125 origin-center">
-        <img src="logo.png" alt="織語 Logo" class="w-32 h-32">
-        <h1 class="text-2xl font-bold">織語</h1>
-        <div id="auth-container"></div>
-        <div id="main-content"></div>
-    </div></main>
+    <main class="flex flex-col flex-grow items-center justify-center">
+        <div class="flex flex-col items-center space-y-6">
+            <img src="logo.png" alt="織語 Logo" class="w-32 h-32">
+            <h1 class="text-3xl font-bold text-gray-900">織語</h1>
+            <p class="text-gray-500 text-sm">你的個人創作空間</p>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="auth.js"></script>
-<!-- script.js moved to end of body -->
-    <footer class="w-full py-4 bg-gray-100 text-center text-sm text-gray-600">
-      <a href="about.html" class="mx-2 hover:underline">關於我們</a>
-      <button id="contact-us-toggle" class="mx-2 hover:underline focus:outline-none">聯絡我們</button>
-      <a href="#" class="mx-2 hover:underline">隱私權政策</a>
+            <!-- Authentication UI -->
+            <div id="auth-container" class="w-full max-w-md px-4">
+                <!-- 未登入時顯示 -->
+                <div id="auth-login">
+                    <button id="google-login-btn"
+                            class="w-full flex items-center justify-center gap-3 px-6 py-4 bg-white border border-gray-200 rounded-xl text-gray-700 font-medium text-base hover:bg-gray-50 transition-colors shadow-sm">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                        使用 Google 登入
+                    </button>
+                    <p class="text-center text-xs text-gray-400 mt-3">登入後可同步雲端資料、建立分享連結</p>
+                </div>
+
+                <!-- 已登入時顯示 -->
+                <div id="auth-user" class="hidden flex items-center justify-between p-4 bg-white border border-gray-200 rounded-xl">
+                    <div class="flex items-center gap-4">
+                        <img id="user-avatar" src="" alt="" class="w-10 h-10 rounded-full">
+                        <div>
+                            <p id="user-email" class="text-base font-medium text-gray-900"></p>
+                            <p class="text-xs text-gray-500">已同步至雲端</p>
+                        </div>
+                    </div>
+                    <button id="logout-btn" class="text-sm text-gray-500 hover:text-gray-700">登出</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+    (async function () {
+        // 若其他程式只使用 window.supabase，請確保在 supabase-config.js 最後加入：
+        // window.supabaseClient = window.supabase;
+        const supabase = window.supabaseClient;
+        if (!supabase) { console.error('Supabase client not initialized'); return; }
+
+        async function updateAuthUI() {
+            const { data: { user } } = await supabase.auth.getUser();
+            const loginDiv = document.getElementById('auth-login');
+            const userDiv  = document.getElementById('auth-user');
+            const avatar   = document.getElementById('user-avatar');
+            const email    = document.getElementById('user-email');
+
+            if (user) {
+                loginDiv?.classList.add('hidden');
+                userDiv?.classList.remove('hidden');
+                email.textContent = user.email;
+                avatar.src = user.user_metadata?.avatar_url ||
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(user.email)}&background=6366f1&color=fff&size=128`;
+            } else {
+                loginDiv?.classList.remove('hidden');
+                userDiv?.classList.add('hidden');
+            }
+        }
+
+        supabase.auth.onAuthStateChange(async () => {
+            await updateAuthUI();
+        });
+
+        const googleBtn = document.getElementById('google-login-btn');
+        if (googleBtn) {
+            googleBtn.addEventListener('click', async () => {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: `${window.location.origin}/template.html` }
+                });
+                if (error) {
+                    console.error('Google 登入失敗', error);
+                    alert('登入失敗：' + error.message);
+                }
+            });
+        }
+
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async () => {
+                await supabase.auth.signOut();
+            });
+        }
+
+        await updateAuthUI();
+    })();
+    </script>
+
+    <footer class="w-full py-6 bg-white border-t border-gray-200 text-gray-500 text-xs">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p class="mb-2">© 2026 織語</p>
+            <div class="flex justify-center gap-6">
+                <a href="about.html" class="hover:text-gray-900 transition-colors">關於我們</a>
+                <button type="button" id="contact-us-toggle" class="hover:text-gray-900 transition-colors cursor-pointer">聯絡我們</button>
+                <a href="privacy.html" class="hover:text-gray-900 transition-colors">隱私權政策</a>
+            </div>
+        </div>
     </footer>
 
-<div id="contact-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-  <div class="bg-white rounded-lg p-6 w-full max-w-md">
-    <h2 class="text-xl font-bold mb-4 text-center">聯絡我們</h2>
-    <form id="contact-form" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium">姓名</label>
-        <input type="text" name="name" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Email</label>
-        <input type="email" name="email" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">訊息</label>
-        <textarea name="message" rows="4" class="mt-1 w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
-      </div>
-      <div class="flex justify-end space-x-2">
-        <button type="button" id="contact-close" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">取消</button>
-        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">送出</button>
-      </div>
-    </form>
-  </div>
-</div>
-<script src="contact.js"></script>
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl border border-gray-100">
+            <h2 class="text-lg font-bold mb-3 text-center text-gray-900">聯絡我們</h2>
+            <div class="h-px bg-gray-200 my-3"></div>
+            <p class="text-center mb-6 text-sm text-gray-700">children520cats@gmail.com</p>
+            <div class="flex justify-end">
+                <button type="button" id="contact-close"
+                        class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="contact.js"></script>
 </body>
 </html>

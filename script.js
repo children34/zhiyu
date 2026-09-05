@@ -204,7 +204,7 @@ let saveTimeout;
 let templateSessionIsPersisted = false;
 
 function shouldUseCloudSync() {
-    return !!(state.user && state.user.uid && typeof db !== 'undefined' && !window.firestoreSyncDisabled);
+    return !!(state.user && state.user.uid && typeof supabase !== 'undefined' && !window.firestoreSyncDisabled);
 }
 
 function disableCloudSync(error) {
@@ -235,7 +235,7 @@ async function saveState(recordHistory = true) {
     }
     if (shouldUseCloudSync()) {
         try {
-            await db.collection('users').doc(state.user.uid).set({ state });
+            await supabase.from('users').upsert({ id: state.user.uid, state });
 			state.hasUnsavedChanges = false;
         } catch (e) {
             disableCloudSync(e);
@@ -811,7 +811,6 @@ function renderMain() {
     }
 
     const main = document.getElementById('main-content');
-if (!main) { console.warn('Missing #main-content, skipping renderMain'); return; }
     if(!state.activePageId) {
         main.innerHTML = `
             <div class="flex flex-col items-center justify-center h-[70vh] text-gray-400 gap-5">
@@ -1079,16 +1078,7 @@ function createBlockElement(block) {
                     }
                     const isValid = /^(https?:\/\/|mailto:|tel:)/i.test(link);
                     if (isValid) {
-                        // Open link safely to avoid COOP restrictions
-if (/^(mailto:|tel:)/i.test(link)) {
-    window.location.href = link;
-} else {
-    const tempLink = document.createElement('a');
-    tempLink.href = link;
-    tempLink.target = '_blank';
-    tempLink.rel = 'noopener';
-    tempLink.click();
-}
+                        window.open(link, '_blank', 'noopener,noreferrer');
                     }
                 });
             });
@@ -1277,16 +1267,7 @@ if (/^(mailto:|tel:)/i.test(link)) {
             }
             e.preventDefault();
             e.stopPropagation();
-            // Open link safely to avoid COOP restrictions
-if (/^(mailto:|tel:)/i.test(link)) {
-    window.location.href = link;
-} else {
-    const tempLink = document.createElement('a');
-    tempLink.href = link;
-    tempLink.target = '_blank';
-    tempLink.rel = 'noopener';
-    tempLink.click();
-}
+            window.open(link, '_blank', 'noopener,noreferrer');
         }
     });
 
@@ -3354,36 +3335,6 @@ window.addEventListener('DOMContentLoaded', async () => {
             if (layoutCard) layoutCard.checked = layouts.includes('card');
         } else {
             if (layoutSingle) layoutSingle.checked = true;
-
-// Contact form modal handling
-const contactToggle = document.getElementById('contact-us-toggle');
-const contactModal = document.getElementById('contact-modal');
-const contactClose = document.getElementById('contact-close');
-const contactForm = document.getElementById('contact-form');
-
-if (contactToggle && contactModal) {
-    contactToggle.addEventListener('click', () => {
-        contactModal.classList.remove('hidden');
-    });
-}
-if (contactClose && contactModal) {
-    contactClose.addEventListener('click', () => {
-        contactModal.classList.add('hidden');
-    });
-}
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const formData = new FormData(contactForm);
-        const name = encodeURIComponent(formData.get('name') || '');
-        const email = encodeURIComponent(formData.get('email') || '');
-        const message = encodeURIComponent(formData.get('message') || '');
-        const subject = '聯絡表單：' + name;
-        const body = '姓名: ' + name + '\\nEmail: ' + email + '\\n\\n訊息:\\n' + message;
-        window.location.href = 'mailto:children520cats@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
-        contactModal.classList.add('hidden');
-    });
-}
         }
 
     } catch (error) {

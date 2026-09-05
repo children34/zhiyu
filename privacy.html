@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隱私權政策 - 織語</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="logo.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="flex flex-col min-h-screen bg-[#fbfbfa] text-gray-800 antialiased selection:bg-gray-200 selection:text-gray-900">
+    <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="index.html" class="inline-flex items-center gap-2.5">
+                <img src="logo.png" alt="織語 Logo" class="w-8 h-8 rounded-lg object-contain">
+                <span class="text-xl font-bold text-gray-900 tracking-wide">織語</span>
+            </a>
+            <nav class="flex items-center gap-6 text-sm">
+                <a href="index.html" class="text-gray-600 hover:text-gray-900 transition-colors">首頁</a>
+                <a href="about.html" class="text-gray-600 hover:text-gray-900 transition-colors">關於我們</a>
+                <a href="privacy.html" class="font-semibold text-gray-900">隱私權政策</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-3xl mx-auto px-4 py-12 w-full">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 tracking-tight">隱私權政策</h1>
+            <p class="text-sm md:text-base text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                最後更新：2026 年 9 月<br>
+                我們重視您的隱私，承諾透明說明資料蒐集、使用與保護方式。
+            </p>
+        </div>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">我們蒐集的資料</h2>
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2.5">
+                        <span class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </span>
+                        帳號資訊
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">透過 Google OAuth 登入時，我們取得您的公開基本資料：姓名、電子郵件、頭像網址。不會取得密碼或敏感權限。</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2.5">
+                        <span class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </span>
+                        創作內容資料
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">您建立的頁面、區塊、模板、設定（背景、音樂、字體等），儲存在 Supabase PostgreSQL 資料庫與本機 IndexedDB。這些資料屬於您，我們不會分析內容、不會用於廣告、不會出售給第三方。</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2.5">
+                        <span class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                        </span>
+                        上傳媒體檔案
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">背景圖、橫幅、頭貼、背景音樂上傳至 Supabase Storage。檔案以您的用戶 ID 隔離儲存，分享連結僅包含公開下載網址。</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 class="text-base font-semibold text-gray-900 mb-2 flex items-center gap-2.5">
+                        <span class="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </span>
+                        技術與分析資料
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">為確保服務穩定與改善體驗，我們可能收集：瀏覽器型別、作業系統、裝置型號、IP 位址（僅用於地理概略判斷）、錯誤日誌、效能指標。不進行個人畫像建立。</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">Cookie 與本地儲存</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 text-gray-500 text-xs uppercase tracking-wider">
+                            <th class="pb-3 px-3 font-semibold">類型</th>
+                            <th class="pb-3 px-3 font-semibold">用途</th>
+                            <th class="pb-3 px-3 font-semibold">保存期限</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 divide-y divide-gray-100">
+                        <tr>
+                            <td class="py-3 px-3 font-medium text-gray-900">Supabase Auth Token</td>
+                            <td class="py-3 px-3 text-gray-600">維持登入狀態、驗證 API 請求</td>
+                            <td class="py-3 px-3 text-gray-600">Session（關閉失效）+ Refresh Token（長期）</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-3 font-medium text-gray-900">IndexedDB (本地)</td>
+                            <td class="py-3 px-3 text-gray-600">離線編輯快取、偏好設定、撤銷/重做堆疊</td>
+                            <td class="py-3 px-3 text-gray-600">直到用戶手動清除</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-3 font-medium text-gray-900">localStorage</td>
+                            <td class="py-3 px-3 text-gray-600">模板選擇狀態、UI 狀態記憶</td>
+                            <td class="py-3 px-3 text-gray-600">直到用戶手動清除</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="mt-4 text-xs text-gray-500 leading-relaxed">
+                    我們 <strong>不使用</strong> 第三方追蹤 Cookie（如 Google Analytics、Facebook Pixel）、不投放廣告、不進行跨站追蹤。
+                </p>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">資料用途</h2>
+            <div class="space-y-3">
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-start gap-4">
+                    <span class="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-gray-800 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">提供核心服務</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">身分驗證、內容儲存與同步、模板管理、分享連結生成、檔案上傳下載。</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-start gap-4">
+                    <span class="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-gray-800 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">服務改善與安全</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">錯誤監控、效能優化、濫用偵測、帳號安全通知（如異地登入）。</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-gray-200 shadow-sm flex items-start gap-4">
+                    <span class="w-8 h-8 bg-gray-100 rounded-xl flex items-center justify-center text-gray-800 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-1">必要聯繫</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">回覆您的客服請求、發送重要服務變更通知、帳號安全相關通知。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">資料保存與刪除</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3 text-sm text-gray-700">
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800 flex-shrink-0 text-xs font-bold">1</span>
+                    <div><strong>創作內容</strong>：您主動刪除前永久保存。刪除操作會同步移除資料庫與 Storage 中的關聯檔案，無法復原。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800 flex-shrink-0 text-xs font-bold">2</span>
+                    <div><strong>帳號資料</strong>：Google 帳號連結資訊在您刪除帳號或撤回授權時移除。Supabase Auth 保留 30 天軟刪除期供誤刪復原。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800 flex-shrink-0 text-xs font-bold">3</span>
+                    <div><strong>技術日誌</strong>：伺服器存取日誌、錯誤追蹤保留 30 天，僅供除錯用途，不含個人內容資料。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-800 flex-shrink-0 text-xs font-bold">4</span>
+                    <div><strong>本地資料</strong>：IndexedDB、localStorage 由您控制，可隨時在瀏覽器設定中清除。</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">第三方服務</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
+                <p class="text-sm text-gray-700 mb-4">我們僅使用以下必要的第三方服務，各服務有其獨立隱私權政策：</p>
+                <div class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                    <div class="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-900">Google (OAuth / Supabase)</h4>
+                        <p class="text-xs text-gray-500">身分驗證、資料庫、檔案儲存、即時同步</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">您的權利</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3 text-sm text-gray-700">
+                <div class="flex items-start gap-3 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                    <span class="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0 shadow-sm border border-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-0.5">存取與攜帶</h4>
+                        <p class="text-xs text-gray-600">您可在編輯器中隨時匯出所有頁面、模板為 JSON，或複製分享連結備份。</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                    <span class="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0 shadow-sm border border-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-0.5">刪除與撤回</h4>
+                        <p class="text-xs text-gray-600">可在 Google 帳號管理移除授權、在編輯器刪除個別內容、或聯繫我們請求刪除帳號資料。</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3 p-3.5 bg-gray-50 rounded-xl border border-gray-100">
+                    <span class="w-7 h-7 bg-white rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0 shadow-sm border border-gray-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-0.5">拒絕追蹤</h4>
+                        <p class="text-xs text-gray-600">瀏覽器啟用「勿追蹤」或隱私模式、停用第三方 Cookie、使用內容阻擋器皆不影響核心功能。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">資料安全</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm space-y-3 text-sm text-gray-700">
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </span>
+                    <div><strong>傳輸加密</strong>：全站 HTTPS (TLS 1.2+)，API 請求皆走加密通道。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </span>
+                    <div><strong>靜態加密</strong>：Supabase 資料庫與 Storage 皆啟用 AES-256 靜態加密。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </span>
+                    <div><strong>最小權限</strong>：Row Level Security (RLS) 強制每筆資料僅屬主可讀寫，分享連結僅開放公開讀取。</div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </span>
+                    <div><strong>定期審查</strong>：我們定期檢視存取日誌、權限設定、依賴套件漏洞，持續強化防護。</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4 pb-2 border-b border-gray-200">聯絡我們</h2>
+            <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm text-center">
+                <p class="text-sm text-gray-700 mb-2">
+                    對本政策有疑慮、想行使權利、或回報隱私事件，歡迎來信：
+                </p>
+                <p class="text-sm text-gray-900 font-semibold mb-3">children520cats@gmail.com</p>
+            </div>
+        </section>
+
+        <div class="text-center">
+            <a href="index.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                回到首頁
+            </a>
+        </div>
+    </main>
+
+    <footer class="w-full py-6 bg-white border-t border-gray-200 text-gray-500 text-xs">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <p class="mb-2">© 2026 織語</p>
+            <div class="flex justify-center gap-6">
+                <a href="about.html" class="hover:text-gray-900 transition-colors">關於我們</a>
+                <button type="button" id="contact-us-toggle" class="hover:text-gray-900 transition-colors cursor-pointer">聯絡我們</button>
+                <a href="privacy.html" class="hover:text-gray-900 transition-colors">隱私權政策</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Contact Modal -->
+    <div id="contact-modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl border border-gray-100">
+            <h2 class="text-lg font-bold mb-3 text-center text-gray-900">聯絡我們</h2>
+            <div class="h-px bg-gray-200 my-3"></div>
+            <p class="text-center mb-6 text-sm text-gray-700">children520cats@gmail.com</p>
+            <div class="flex justify-end">
+                <button type="button" id="contact-close" class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="contact.js"></script>
+</body>
+</html>
