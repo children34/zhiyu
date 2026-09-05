@@ -1,0 +1,31 @@
+# Node modules (if any)
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Build artifacts (if you have a build step; not used now)
+/dist/
+/build/
+
+# IDE / editor folders
+.vscode/
+.idea/
+
+# Sensitive files (never commit)
+.env
+.env.local
+.env.*
+
+# GitHub Pages specific
+*.github
