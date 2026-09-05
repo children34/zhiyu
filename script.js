@@ -273,7 +273,7 @@ async function playYouTubeVideo(videoId) {
                 loop: 1,
                 playlist: videoId,
                 controls: 0,
-                origin: window.location.protocol === 'file:' ? 'http://localhost' : location.origin
+                origin: location.origin
             },
             events: {
                 onReady: (event) => {
