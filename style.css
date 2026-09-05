@@ -1,16 +1,66 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
 
-/* Typography Utilities */
-.font-inter { font-family: 'Inter', sans-serif; }
-.font-roboto { font-family: 'Roboto', sans-serif; }
-.font-lxgw { font-family: 'LXGW WenKai Mono TC', monospace; }
+/* ==========================================
+   TYPOGRAPHY & BASE STYLES
+   ========================================== */
+
+/* Mobile-first base font sizes, scaled up at larger breakpoints */
+html {
+    font-size: 16px; /* Base: 16px at mobile */
+}
+
+@media (min-width: 640px) { /* sm */
+    html { font-size: 16.5px; }
+}
+@media (min-width: 768px) { /* md */
+    html { font-size: 17px; }
+}
+@media (min-width: 1024px) { /* lg */
+    html { font-size: 18px; }
+}
+@media (min-width: 1280px) { /* xl */
+    html { font-size: 20px; }
+}
 
 body {
     font-family: 'Inter', 'Noto Sans TC', sans-serif;
     color: #374151;
+    background-color: #fbfbfa;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-/* Custom scrollbar for a cleaner look */
+/* Scale text fluidly between breakpoints - advanced typography */
+h1, .h1 { font-size: 1.875rem; line-height: 2.25rem; } /* 30px at md */
+@media (min-width: 768px) { /* md */
+    h1, .h1 { font-size: 2.25rem; line-height: 2.5rem; } /* 36px */
+}
+@media (min-width: 1024px) { /* lg */
+    h1, .h1 { font-size: 3rem; line-height: 1; } /* 48px */
+}
+
+h2, .h2 { font-size: 1.5rem; line-height: 2rem; } /* 24px */
+@media (min-width: 768px) { /* md */
+    h2, .h2 { font-size: 1.875rem; line-height: 2.25rem; } /* 30px */
+}
+@media (min-width: 1024px) { /* lg */
+    h2, .h2 { font-size: 2.25rem; line-height: 2.5rem; } /* 36px */
+}
+
+h3, .h3 { font-size: 1.25rem; line-height: 1.75rem; } /* 20px */
+@media (min-width: 1024px) { /* lg */
+    h3, .h3 { font-size: 1.5rem; line-height: 2rem; } /* 24px */
+}
+
+p { line-height: 1.75rem; margin-bottom: 1.5rem; }
+
+/* Inline elements & links */
+a { color: #111827; text-decoration: none; transition: color 0.2s; }
+a:hover { color: #059669; }
+
+/* ==========================================
+   SCROLLBAR STYLES
+   ========================================== */
 .custom-scrollbar::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -42,39 +92,39 @@ body {
     background: #9ca3af;
 }
 
-/* Custom styles for contenteditable placeholder */
-[contenteditable="true"]:empty:before {
-    content: attr(data-placeholder);
-    color: #d1d5db;
-    pointer-events: none;
-    display: block;
-    cursor: text;
-    font-style: italic;
-}
-
-/* Focus styles for text blocks */
-.text-content:focus {
-    outline: none;
-}
-
-/* Drag placeholder style */
+/* ==========================================
+   DRAG PLACEHOLDER
+   ========================================== */
 .drop-placeholder {
     position: absolute;
     z-index: 10;
     width: 100%;
     height: 3px;
-    background-color: #e5e7eb; /* gray-200 */
+    background-color: #e5e7eb;
     border-radius: 2px;
     pointer-events: none;
     box-shadow: 0 0 4px rgba(99, 102, 241, 0.5);
 }
 
-/* Specificity fix for hidden elements */
-.hidden {
-    display: none !important;
+/* ==========================================
+   HIDDEN UTILITIES - RESPONSIVE
+   ========================================== */
+/* Hidden by default at mobile, visible at md+ */
+.hidden { display: none !important; }
+
+/* Show at mobile, hide at md+ */
+@media (min-width: 768px) { /* md */
+    .hidden-md-down { display: none !important; }
 }
 
-/* Animations */
+/* Hide at mobile, show at md+ */
+@media (min-width: 768px) { /* md */
+    .hidden-md-up { display: block !important; }
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -104,7 +154,9 @@ body {
     animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* Card layout visual tweaks */
+/* ==========================================
+   CARD LAYOUT VISUAL TWEAKS
+   ========================================== */
 .card-layout {
     position: relative;
 }
@@ -115,16 +167,18 @@ body {
     left: 0;
     width: 4px;
     height: 100%;
-    background-color: #f3f4f6; /* gray-100 */
+    background-color: #f3f4f6;
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
     transition: background-color 0.2s;
 }
 .card-layout:hover::before {
-    background-color: #cbd5e1; /* gray-400 */
+    background-color: #cbd5e1;
 }
 
-/* Clean up range slider */
+/* ==========================================
+   RESPONSIVE RANGE SLIDER
+   ========================================== */
 input[type=range] {
     -webkit-appearance: none; -moz-appearance: none; appearance: none;
     background: transparent;
@@ -139,10 +193,88 @@ input[type=range]::-webkit-slider-thumb {
     margin-top: -4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
+@media (min-width: 768px) { /* md */
+    input[type=range]::-webkit-slider-thumb { height: 14px; width: 14px; }
+}
 input[type=range]::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
     cursor: pointer;
     background: #e5e7eb;
     border-radius: 2px;
+}
+
+/* ==========================================
+   RESPONSIVE FLEX & GRID LAYOUT UTILITIES
+   ========================================== */
+/* Make max-width containers responsive */
+.max-w-full { max-width: 100%; }
+@media (min-width: 768px) { /* md */
+    .max-w-full { max-width: 100%; }
+    .max-w-md { max-width: 720px; }
+    .max-w-lg { max-width: 1024px; }
+    .max-w-xl { max-width: 1280px; }
+}
+
+/* Tablet/desktop grid container */
+@media (min-width: 768px) { /* md */
+    .grid-cols-12 { grid-template-columns: repeat(12, 1fr); }
+    .col-span-1 { grid-column: span 1 / span 1; }
+    .col-span-2 { grid-column: span 2 / span 2; }
+    .col-span-3 { grid-column: span 3 / span 3; }
+    .col-span-4 { grid-column: span 4 / span 4; }
+    .col-span-6 { grid-column: span 6 / span 6; }
+    .col-span-8 { grid-column: span 8 / span 8; }
+    .col-span-12 { grid-column: span 12 / span 12; }
+}
+
+/* ==========================================
+   RESPONSIVE COMPONENT OVERIDES
+   ========================================== */
+
+/* Banner container - full width on mobile, constrained on desktop */
+#banner-container {
+    width: 100%;
+}
+@media (min-width: 768px) { /* md */
+    #banner-container { width: 100%; }
+}
+@media (min-width: 1024px) { /* lg */
+    #banner-container { max-width: 1440px; margin: 0 auto; }
+}
+
+/* Main content area */
+#main-content { padding-bottom: 2rem; }
+@media (min-width: 768px) { /* md */
+    #main-content { padding-bottom: 3rem; }
+}
+@media (min-width: 1024px) { /* lg */
+    #main-content { padding-bottom: 4rem; }
+}
+
+/* Avatar container - smaller on mobile */
+#avatar-container { justify-content: flex-end; }
+@media (min-width: 768px) { /* md */
+    #avatar-container { justify-content: flex-end; }
+}
+
+/* ==========================================
+   RESPONSIVE LAYOUT CLASSES FOR SIDEBAR
+   ========================================== */
+/* Sidebar already has md: classes in HTML, but we add CSS fallback */
+@media (min-width: 768px) { /* md */
+    /* Sidebar becomes static (not fixed) at md+ */
+    aside.sidebar-fallback { position: static; }
+
+    /* Overlay hidden at md+ */
+    #mobile-overlay { display: none !important; }
+}
+
+/* ==========================================
+   PRINT & ACCESSIBILITY
+   ========================================== */
+@media print {
+    .no-print { display: none !important; }
+    body * { visibility: hidden; }
+    #main-content, .print-section { visibility: visible; }
 }
